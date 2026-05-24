@@ -5,7 +5,7 @@
 <p>The MCP server for <a href="https://agentskills.io">AgentSkills</a>.<br>
 Expose your local skills as prompts, resources, and tools — over stdio, spec-compliant with MCP 2025-11-25.</p>
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)&nbsp;[![Bun](https://img.shields.io/badge/Bun-1.1+-fbf0df?logo=bun&logoColor=black)](https://bun.sh)&nbsp;[![MCP](https://img.shields.io/badge/MCP-2025--11--25-6366f1)](https://modelcontextprotocol.io/specification/2025-11-25)&nbsp;[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e)](./LICENSE)
+[![npm](https://img.shields.io/npm/v/agentskills-mcp?logo=npm&logoColor=white&color=cb3837)](https://www.npmjs.com/package/agentskills-mcp)&nbsp;[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)&nbsp;[![Bun](https://img.shields.io/badge/Bun-1.1+-fbf0df?logo=bun&logoColor=black)](https://bun.sh)&nbsp;[![MCP](https://img.shields.io/badge/MCP-2025--11--25-6366f1)](https://modelcontextprotocol.io/specification/2025-11-25)&nbsp;[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e)](./LICENSE)
 
 <p>
 Works with&nbsp;
@@ -33,9 +33,11 @@ Skills are auto-discovered at startup and surfaced across all three MCP protocol
 
 ## Quick start
 
+Install once, run anywhere:
+
 ```bash
-bun start               # run the server (stdio)
-bun --watch src/server.ts  # hot-reload during development
+bunx agentskills-mcp     # run via Bun (recommended)
+npx agentskills-mcp      # run via Node
 ```
 
 <br>
@@ -46,8 +48,8 @@ bun --watch src/server.ts  # hot-reload during development
 {
   "mcpServers": {
     "agent-skills": {
-      "command": "bun",
-      "args": ["/path/to/skill-mcp/src/server.ts"]
+      "command": "bunx",
+      "args": ["agentskills-mcp"]
     }
   }
 }
@@ -59,8 +61,8 @@ bun --watch src/server.ts  # hot-reload during development
 {
   "mcpServers": {
     "agent-skills": {
-      "command": "bun",
-      "args": ["/path/to/skill-mcp/src/server.ts"]
+      "command": "bunx",
+      "args": ["agentskills-mcp"]
     }
   }
 }
@@ -72,8 +74,8 @@ bun --watch src/server.ts  # hot-reload during development
 ```json
 {
   "agent-skills": {
-    "command": "bun",
-    "args": ["/path/to/skill-mcp/src/server.ts"]
+    "command": "bunx",
+    "args": ["agentskills-mcp"]
   }
 }
 ```
@@ -85,11 +87,21 @@ bun --watch src/server.ts  # hot-reload during development
 ```json
 {
   "agent-skills": {
-    "command": "bun",
-    "args": ["/path/to/skill-mcp/src/server.ts"],
+    "command": "npx",
+    "args": ["-y", "agentskills-mcp"],
     "transport": "stdio"
   }
 }
+```
+</details>
+
+<details>
+<summary><strong>From source</strong></summary>
+
+```bash
+git clone https://github.com/damionrashford/skill-mcp
+cd skill-mcp
+bun start
 ```
 </details>
 

@@ -1,8 +1,15 @@
 {
-  "name": "agent-skills-mcp",
+  "name": "agentskills-mcp",
   "version": "1.10.0",
-  "description": "AgentSkills MCP server — skills as prompts, resources, and tools (MCP 2025-11-25)",
-  "private": true,
+  "description": "MCP server for AgentSkills — expose skills as prompts, resources & tools. Works with Claude Desktop, Cursor, Cline. MCP 2025-11-25 compliant.",
+  "bin": {
+    "agentskills-mcp": "src/server.ts"
+  },
+  "files": [
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "start": "bun src/server.ts",
     "dev": "bun --watch src/server.ts",
@@ -15,5 +22,37 @@
   "devDependencies": {
     "@types/bun": "^1.3.14",
     "@types/node": "^25.9.1"
+  },
+  "engines": {
+    "bun": ">=1.1.0"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "agentskills",
+    "agent-skills",
+    "claude",
+    "claude-desktop",
+    "claude-code",
+    "cursor",
+    "cline",
+    "ai-agent",
+    "llm-tools",
+    "prompts",
+    "resources",
+    "tools",
+    "typescript",
+    "bun"
+  ],
+  "author": "Damion Rashford",
+  "license": "MIT",
+  "homepage": "https://github.com/damionrashford/skill-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/damionrashford/skill-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/damionrashford/skill-mcp/issues"
   }
 }

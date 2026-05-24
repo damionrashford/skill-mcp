@@ -1,41 +1,46 @@
-# agent-skills-mcp
+<div align="center">
 
-**The MCP server for [AgentSkills](https://agentskills.io).** Expose your local skills as prompts, resources, and tools — fully spec-compliant with MCP 2025-11-25.
+<h1>agent-skills-mcp</h1>
 
-Works with **Claude Desktop**, **Claude Code**, **Cursor**, **Cline**, **Windsurf**, and any other MCP-compatible client.
+<p>The MCP server for <a href="https://agentskills.io">AgentSkills</a>.<br>
+Expose your local skills as prompts, resources, and tools — over stdio, spec-compliant with MCP 2025-11-25.</p>
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Bun](https://img.shields.io/badge/Bun-1.1+-fbf0df?logo=bun&logoColor=black)](https://bun.sh)
-[![MCP](https://img.shields.io/badge/MCP-2025--11--25-6366f1)](https://modelcontextprotocol.io/specification/2025-11-25)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)&nbsp;[![Bun](https://img.shields.io/badge/Bun-1.1+-fbf0df?logo=bun&logoColor=black)](https://bun.sh)&nbsp;[![MCP](https://img.shields.io/badge/MCP-2025--11--25-6366f1)](https://modelcontextprotocol.io/specification/2025-11-25)&nbsp;[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e)](./LICENSE)
+
+<p>
+Works with&nbsp;
+<strong>Claude Desktop</strong> &nbsp;·&nbsp; <strong>Claude Code</strong> &nbsp;·&nbsp; <strong>Cursor</strong> &nbsp;·&nbsp; <strong>Cline</strong> &nbsp;·&nbsp; <strong>Windsurf</strong><br>
+and any MCP-compatible client
+</p>
+
+</div>
 
 ---
 
-## What it does
+## Protocol surfaces
 
 Skills are auto-discovered at startup and surfaced across all three MCP protocol surfaces:
 
 | Surface | URI / Name | What you get |
-|---|---|---|
-| `prompts/list` + `prompts/get` | `{skill-name}` | Full skill body + embedded file manifest |
-| `resources/read` | `skills://{skill}/source/{+path}` | Any file from the skill directory (text or binary) |
-| `resources/read` | `skills://{skill}/exec/{+path}` | Execute a skill script, stream stdout back |
-| `resources/read` | `skills://catalog` | `<available_skills>` XML block for system-prompt injection |
-| `tools/call` | `skill` | Full activation: `<skill_content>` block + one ResourceLink per file |
+|:--------|:-----------|:------------|
+| **Prompts** | `{skill-name}` | Full skill body + embedded file manifest |
+| **Resources** | `skills://{skill}/source/{+path}` | Any file from the skill directory (text or binary) |
+| **Resources** | `skills://{skill}/exec/{+path}` | Execute a skill script, capture stdout |
+| **Resources** | `skills://catalog` | `<available_skills>` XML for system-prompt injection |
+| **Tools** | `skill` | Full activation: `<skill_content>` block + one ResourceLink per file |
 
 ---
 
 ## Quick start
 
 ```bash
-# Run the server (stdio transport)
-bun src/server.ts
-
-# Or via the package script
-bun start
+bun start               # run the server (stdio)
+bun --watch src/server.ts  # hot-reload during development
 ```
 
-### Add to Claude Desktop
+<br>
+
+**Claude Desktop** — edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
@@ -48,7 +53,7 @@ bun start
 }
 ```
 
-### Add to Claude Code
+**Claude Code** — edit `~/.claude/mcp_servers.json` (global) or `.mcp.json` at project root:
 
 ```json
 {
@@ -61,11 +66,8 @@ bun start
 }
 ```
 
-Config file: `~/.claude/mcp_servers.json` (global) or `.mcp.json` at project root.
-
-### Add to Cursor
-
-In **Cursor Settings → MCP → Add Server**:
+<details>
+<summary><strong>Cursor</strong> — Settings → MCP → Add Server</summary>
 
 ```json
 {
@@ -75,10 +77,10 @@ In **Cursor Settings → MCP → Add Server**:
   }
 }
 ```
+</details>
 
-### Add to Cline (VS Code)
-
-In Cline's **MCP Servers** panel → **Edit MCP Settings**:
+<details>
+<summary><strong>Cline (VS Code)</strong> — MCP Servers panel → Edit MCP Settings</summary>
 
 ```json
 {
@@ -89,21 +91,22 @@ In Cline's **MCP Servers** panel → **Edit MCP Settings**:
   }
 }
 ```
+</details>
 
 ---
 
 ## Skill discovery
 
-Skills are scanned from these directories on startup (first match wins per skill name):
+On startup the server scans these directories in order — first match wins per skill name:
 
-```
-{cwd}/.agents/skills/    ← project-local (checked first)
-{cwd}/.claude/skills/    ← Claude Code project skills
-~/.agents/skills/         ← user-global
-~/.claude/skills/         ← Claude Code global skills
-```
+| Priority | Path | Scope |
+|:--------:|:-----|:------|
+| 1 | `{cwd}/.agents/skills/` | Project-local |
+| 2 | `{cwd}/.claude/skills/` | Claude Code project |
+| 3 | `~/.agents/skills/` | User-global |
+| 4 | `~/.claude/skills/` | Claude Code global |
 
-Each skill is a directory with a `SKILL.md` (or `skill.md`) at its root.
+Each skill is a directory containing a `SKILL.md` (or `skill.md`) at its root.
 
 ---
 
@@ -113,24 +116,24 @@ Each skill is a directory with a `SKILL.md` (or `skill.md`) at its root.
 ---
 name: my-skill
 description: One-line description shown in prompts/list (max 1024 chars)
-license: MIT                    # optional
-compatibility: Claude Code      # optional — e.g. "Claude Code, Cursor"
-allowed-tools: Read, Bash       # optional — space or comma separated
+license: MIT                       # optional
+compatibility: Claude Code, Cursor  # optional
+allowed-tools: Read, Bash          # optional
 ---
 
 # My Skill
 
-Full skill body. Supports any Markdown.
-Scripts in the directory are auto-detected and executable via resources/exec.
+Full skill body — any Markdown.
+Scripts in the directory are auto-detected and executable via the exec surface.
 ```
 
-### Supported script runners
+Scripts are detected by extension and run with the appropriate runner:
 
 | Extension | Runner |
-|---|---|
+|:----------|:-------|
 | `.py` | `uv run` |
-| `.ts` / `.tsx` / `.js` / `.mjs` | `bun` |
-| `.sh` / `.bash` | `bash` |
+| `.ts` · `.tsx` · `.js` · `.mjs` | `bun` |
+| `.sh` · `.bash` | `bash` |
 | `.rb` | `ruby` |
 | `.go` | `go run` |
 
@@ -138,18 +141,20 @@ Scripts in the directory are auto-detected and executable via resources/exec.
 
 ## Protocol compliance
 
-Full MCP 2025-11-25 implementation:
+Full MCP 2025-11-25 implementation across every protocol surface:
 
-- **Prompts** — `prompts/list` (cursor-paginated), `prompts/get`, `notifications/prompts/list_changed`
-- **Resources** — `resources/list` (with `size`), `resources/templates/list` (paginated), `resources/read` (text + binary blob), `resources/subscribe` / `resources/unsubscribe`
-- **Tools** — `tools/list` (paginated, with `execution` + `outputSchema`), `tools/call` (returns `structuredContent` + backwards-compat JSON TextContent + ResourceLink blocks)
-- **Completion** — `completion/complete` for both `{skill}` and `{+path}` URI variables with accurate `total` + `hasMore`
-- **Logging** — `logging` capability, `logging/setLevel`, startup `notifications/message`
-- **Annotations** — `audience`, `priority`, `lastModified` on all content blocks
+| Feature | Coverage |
+|:--------|:---------|
+| **Prompts** | `prompts/list` (cursor-paginated) · `prompts/get` · `list_changed` notification |
+| **Resources** | `resources/list` (with `size`) · templates (paginated) · `resources/read` text + binary · subscribe / unsubscribe |
+| **Tools** | `tools/list` (paginated) · `structuredContent` + `outputSchema` · `execution` field · backwards-compat TextContent |
+| **Completion** | `completion/complete` for `{skill}` and `{+path}` with accurate `total` + `hasMore` |
+| **Logging** | `logging` capability · `setLevel` · startup `notifications/message` |
+| **Annotations** | `audience` · `priority` · `lastModified` on all content blocks |
 
 ---
 
-## Project structure
+## Project layout
 
 ```
 skill-mcp/
@@ -157,14 +162,14 @@ skill-mcp/
 │   ├── server.ts          # Entry point — MCP registrations + connect
 │   └── lib/
 │       ├── types.ts       # Skill + ParsedFrontmatter interfaces
-│       ├── frontmatter.ts # YAML frontmatter parser, validateName
+│       ├── frontmatter.ts # YAML parser, validateName
 │       ├── catalog.ts     # Skill discovery (scanSkillDirs)
 │       ├── mime.ts        # mimeForPath, isBinaryMime
 │       ├── runner.ts      # isScript, detectRunner, runScript
 │       ├── pagination.ts  # Cursor-based pagination helpers
 │       └── xml.ts         # escapeXml
 └── test/
-    └── integration.ts     # End-to-end test (spawns server over stdio)
+    └── integration.ts     # End-to-end — spawns server, exercises all surfaces
 ```
 
 ---
@@ -172,29 +177,20 @@ skill-mcp/
 ## Development
 
 ```bash
-bun start          # run the server
-bun test           # integration test — spawns server, exercises all 4 surfaces
-bun typecheck      # tsc --noEmit (no output on success)
-bun --watch src/server.ts  # hot-reload
+bun start                    # run
+bun test                     # integration test
+bun typecheck                # tsc --noEmit
+bun --watch src/server.ts    # hot-reload
 ```
 
----
-
-## Requirements
-
-- [Bun](https://bun.sh) ≥ 1.1
-- `@modelcontextprotocol/sdk` ^1.29.0 (auto-installed via `bun install`)
+**Requirements:** [Bun](https://bun.sh) ≥ 1.1 · `@modelcontextprotocol/sdk` ^1.29.0 (auto-installed)
 
 ---
 
-## Related
+<div align="center">
 
-- [AgentSkills](https://agentskills.io) — the skill specification this server implements
-- [MCP specification 2025-11-25](https://modelcontextprotocol.io/specification/2025-11-25) — the protocol spec
-- [modelcontextprotocol/registry](https://github.com/modelcontextprotocol/registry) — community MCP server registry
+[AgentSkills spec](https://agentskills.io) &nbsp;·&nbsp; [MCP 2025-11-25](https://modelcontextprotocol.io/specification/2025-11-25) &nbsp;·&nbsp; [MCP Registry](https://github.com/modelcontextprotocol/registry)
 
----
+<sub>MIT License</sub>
 
-## License
-
-MIT
+</div>
